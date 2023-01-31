@@ -36,6 +36,36 @@ const Friends = () => {
     });
   }, []);
 
+
+  let handleBlock = (item)=>{
+
+    data.userdata.userInfo.uid == item.senderid 
+    ?
+    set(push(ref(db, "block")), {
+     block: item.recevername,
+     blockid: item.receverid,
+     blockby: item.sendername,
+     blockbyid: item.senderid,
+    }).then(()=>{
+      remove(ref(db, "friends/" + item.id)).then(() => {
+        console.log("kaj hoiche")
+      })
+    })
+    :
+    set(push(ref(db, "block")), {
+      block: item.sendername,
+      blockid: item.senderid,
+      blockby: item.recevername,
+      blockbyid: item.receverid,
+     }).then(()=>{
+      remove(ref(db, "friends/" + item.id)).then(() => {
+        console.log("kaj hoiche")
+      });
+    })
+
+    
+  }
+
   return (
     <div className="groupholder">
       <div className="titleHolder">
@@ -54,10 +84,10 @@ const Friends = () => {
               ) : (
                 <h3>{item.sendername}</h3>
               )}
-              <p>Hi Guys, Wassup!</p>
+              <p>{item.date}</p>
             </div>
             <div>
-              <button className="boxbtn">Block</button>
+              <button onClick={()=>handleBlock(item)} className="boxbtn">Block</button>
             </div>
           </div>
         ))}

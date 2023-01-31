@@ -36,7 +36,7 @@ const FriendRequest = () => {
   };
 
   let handleAcceptFriendRequest = (friendRequest) => {
-    set(push(ref(db, "friendRequest")), {
+    set(push(ref(db, "friends")), {
       ...friendRequest,
       date: `${new Date().getDate()}/${
         new Date().getMonth() + 1
