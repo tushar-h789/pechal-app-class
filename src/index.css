@@ -191,4 +191,8 @@
   margin-top: 30px;
 }
 
+.flex_button{
+  display: flex;
+}
+
 /* Home page design end */

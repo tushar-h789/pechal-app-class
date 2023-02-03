@@ -1,14 +1,27 @@
 import React from "react";
 import Images from "./Images";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { getDatabase, ref, onValue, set, push } from "firebase/database";
+import {
+  getDatabase,
+  ref,
+  onValue,
+  set,
+  push,
+  remove,
+} from "firebase/database";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import FriendRequest from "./FriendRequest";
 
 const UserList = () => {
   const db = getDatabase();
   let [userlist, setUserlist] = useState([]);
   let [freq, setFreq] = useState([]);
+  let [friends, setFiends] = useState([]);
+  let [block, setBlock] = useState([]);
+  let [cancle, setCancle] = useState([]);
 
   let data = useSelector((state) => state);
   console.log(data.userdata.userInfo.uid);
@@ -30,19 +43,55 @@ const UserList = () => {
     const userRef = ref(db, "friendrequest");
     onValue(userRef, (snapshot) => {
       let arr = [];
+      let arrTwo = [];
       snapshot.forEach((item) => {
+        console.log(item);
         arr.push(item.val().receverid + item.val().senderid);
+        arrTwo.push({...item.val(), id:item.key});
       });
       setFreq(arr);
+      setCancle(arrTwo)
+    });
+  }, []);
+
+  useEffect(() => {
+    const userRef = ref(db, "friends");
+    onValue(userRef, (snapshot) => {
+      let arr = [];
+      snapshot.forEach((item) => {
+        console.log(item);
+        arr.push(item.val().receverid + item.val().senderid);
+      });
+      setFiends(arr);
+    });
+  }, []);
+
+  useEffect(() => {
+    const userRef = ref(db, "block");
+    onValue(userRef, (snapshot) => {
+      let arr = [];
+      snapshot.forEach((item) => {
+        console.log(item);
+        arr.push(item.val().receverid + item.val().senderid);
+      });
+      setBlock(arr);
     });
   }, []);
 
   let handleFriendRequest = (info) => {
+    console.log(info);
     set(push(ref(db, "friendrequest")), {
       sendername: data.userdata.userInfo.displayName,
       senderid: data.userdata.userInfo.uid,
       recevername: info.displayName,
       receverid: info.id,
+    });
+  };
+
+  let handleDelete = (item) => {
+    console.log(item);
+    remove(ref(db, "friendrequest/" + item.id)).then(() => {
+      console.log("Calcle Friend Request");
     });
   };
 
@@ -64,9 +113,17 @@ const UserList = () => {
               <p>{item.email}</p>
             </div>
             <div>
-              {freq.includes(item.id + data.userdata.userInfo.uid) ||
-              freq.includes(data.userdata.userInfo.uid + item.id) ? (
-                <button className="boxbtn">Panding</button>
+              {friends.includes(item.id + data.userdata.userInfo.uid) ||
+              friends.includes(data.userdata.userInfo.uid + item.id) ? (
+                <button className="boxbtn">Friend</button>
+              ) : freq.includes(item.id + data.userdata.userInfo.uid) ||
+                freq.includes(data.userdata.userInfo.uid + item.id) ? (
+                <div className="flex_button">
+                  <button className="boxbtn">Panding</button>
+                  <button onClick={() => handleDelete(item)} className="boxbtn">
+                    Cancle
+                  </button>
+                </div>
               ) : (
                 <button
                   onClick={() => handleFriendRequest(item)}
