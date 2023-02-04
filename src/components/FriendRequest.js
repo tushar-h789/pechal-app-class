@@ -13,15 +13,14 @@ const FriendRequest = () => {
   let [freq, setFreq] = useState([]);
 
   let data = useSelector((state) => state);
-  console.log(data.userdata.userInfo.uid);
 
+  //Sent Request button a click korar pore database jei sob information pathano hoichilo segulo information gulo ekhane onValue diye dhorte hobe. arr.push({ ...item.val(), id: item.key }) == aetar mane holo 2jon user er sob data/informatin aksathe niye ...item.val() diye splet korteche. r tader 2jon er jonno akta id/key create hoiche. sei id/key ta ke dhorar jonno id:item.key deoa hoiche. akhon aegulo information gulo ke arr te push kora hiche. tarpor freq ta ke map kora hoiche. nice map kora ache....
   useEffect(() => {
     const starCountRef = ref(db, "friendrequest");
     onValue(starCountRef, (snapshot) => {
       let arr = [];
       snapshot.forEach((item) => {
-        console.log(item.val())
-        if (item.val().receverid == data.userdata.userInfo.uid) {
+        if (item.val().receverid === data.userdata.userInfo.uid) {
           arr.push({ ...item.val(), id: item.key }); 
         }
       });
@@ -29,13 +28,16 @@ const FriendRequest = () => {
     });
   }, []);
 
+
+  //Reject button a click korar pore database a "friendRequest" folder er moddhe 2jon er jonno jei id/key toiri hoichilo sei id/key ta delete hoye jabe. 
   let handleDeleteRriendRequest = (friendRequest) => {
-    console.log(friendRequest);
     remove(ref(db, "friendrequest/" + friendRequest.id)).then(() => {
       toast("Calcle Friend Request");
     });
   };
 
+
+  //friend request asar pore Accept button a click korar pore je request pathaiche r je request ppaiche tader 2jon er under a akta id/key create hobe. ae key ta database a "friends" namer akta folder create hobe. data ta database a pathanor pore friend request option theke remove hoye jabe r Friends option a user ke show korabe. user er sob information er sathe date o database a pathano hobe.
   let handleAcceptFriendRequest = (friendRequest) => {
     set(push(ref(db, "friends")), {
       ...friendRequest,
@@ -56,6 +58,8 @@ const FriendRequest = () => {
         <BsThreeDotsVertical />
       </div>
       <div className="boxHolder">
+
+        {/* ekhane useState er freq ke map kora hoiche. akta user er sob information map er moddhe rakha hoiche. freq.length > 0 = er mane holo Friend Request er moddhe jodi kono request thake tahole sey request ta ke show korabe r jodi na thake tahole "No Friend Request" dekhabe */}
         {freq.length > 0 ? (
           freq.map((item) => (
             <div className="box">

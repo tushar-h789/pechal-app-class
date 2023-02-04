@@ -1,6 +1,7 @@
 import Images from "./Images";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import React, { useEffect, useState } from "react";
+import Alert from "@mui/material/Alert";
 
 import {
   getDatabase,
@@ -18,7 +19,7 @@ const BlockUser = () => {
   let [blocklist, setBlocklist] = useState([]);
 
   let data = useSelector((state) => state);
-  console.log(data.userdata.userInfo.uid);
+  // console.log(data.userdata.userInfo.uid);
 
   useEffect(() => {
     const starCountRef = ref(db, "block");
@@ -61,7 +62,6 @@ const BlockUser = () => {
       }/${new Date().getFullYear()}`,
      }).then(()=>{
       remove(ref(db, "block/" + item.id)).then(() => {
-        console.log("kaj hoiche")
       });
     })
   }
@@ -74,7 +74,10 @@ const BlockUser = () => {
         <BsThreeDotsVertical />
       </div>
       <div className="boxHolder">
-        {blocklist.map((item) => (
+        
+        {blocklist.length > 0 
+        ?
+        blocklist.map((item) => (
           <div className="box">
             <div className="">
               <Images imgsrc="assets/profile.png" />
@@ -89,7 +92,14 @@ const BlockUser = () => {
               <button onClick={()=>handleUnblock(item)} className="boxbtn">Unblock</button>
             </div>
           </div>
-        ))}
+        ))
+        :
+        <Alert className="alert" variant="filled" severity="info">
+            No Friend Request
+          </Alert>
+        
+        }
+        
       </div>
     </div>
   );

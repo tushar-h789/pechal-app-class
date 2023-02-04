@@ -1,6 +1,7 @@
 import Images from "./Images";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import React, { useEffect, useState } from "react";
+import Alert from "@mui/material/Alert";
 
 import {
   getDatabase,
@@ -12,13 +13,13 @@ import {
 } from "firebase/database";
 import { useSelector } from "react-redux";
 
+
 const Friends = () => {
   const db = getDatabase();
 
   let [friends, setFriends] = useState([]);
 
   let data = useSelector((state) => state);
-  console.log(data.userdata.userInfo.uid);
 
   useEffect(() => {
     const starCountRef = ref(db, "friends");
@@ -37,9 +38,24 @@ const Friends = () => {
   }, []);
 
 
+  // ekhan theke jokhon unfriend korte cacche tokhon unfriend button a click korle jotogulo friend ache sob gulo friend unfriend hoye jacche.
+  // useEffect(() => {
+  //   const userRef = ref(db, "friends");
+  //   onValue(userRef, (snapshot) => {
+  //     let arr = [];
+  //     console.log(arr)
+  //     snapshot.forEach((item) => {
+  //       arr.push(item.val().senderid + item.val().receverid);
+  //       console.log({...item.val(), id: item.key})
+  //     });
+  //     setUnfiends(arr);
+  //   });
+  // }, []);
+
+
   let handleBlock = (item)=>{
 
-    data.userdata.userInfo.uid == item.senderid 
+    data.userdata.userInfo.uid === item.senderid 
     ?
     set(push(ref(db, "block")), {
      block: item.recevername,
@@ -48,7 +64,6 @@ const Friends = () => {
      blockbyid: item.senderid,
     }).then(()=>{
       remove(ref(db, "friends/" + item.id)).then(() => {
-        console.log("kaj hoiche")
       })
     })
     :
@@ -59,12 +74,16 @@ const Friends = () => {
       blockbyid: item.receverid,
      }).then(()=>{
       remove(ref(db, "friends/" + item.id)).then(() => {
-        console.log("kaj hoiche")
       });
     })
-
-    
   }
+
+  let handleUnfriend = (item) => {
+      remove(ref(db, "friends/" + item.id)).then(() => {
+        console.log("Unfriend done");
+      
+    });
+  };
 
   return (
     <div className="groupholder">
@@ -73,24 +92,41 @@ const Friends = () => {
         <BsThreeDotsVertical />
       </div>
       <div className="boxHolder">
-        {friends.map((item) => (
-          <div className="box">
-            <div className="">
-              <Images imgsrc="assets/profile.png" />
-            </div>
-            <div className="title">
-              {data.userdata.userInfo.uid == item.senderid  ? (
-                <h3>{item.recevername}</h3>
-              ) : (
-                <h3>{item.sendername}</h3>
-              )}
-              <p>{item.date}</p>
-            </div>
-            <div>
-              <button onClick={()=>handleBlock(item)} className="boxbtn">Block</button>
-            </div>
+
+      {friends.length > 0 
+      ?
+      friends.map((item) => (
+        <div className="box">
+          <div className="">
+            <Images imgsrc="assets/profile.png" />
           </div>
-        ))}
+          <div className="title">
+            {data.userdata.userInfo.uid == item.senderid  ? (
+              <h3>{item.recevername}</h3>
+            ) : (
+              <h3>{item.sendername}</h3>
+            )}
+            <p>{item.date}</p>
+          </div>
+          <div>
+            <button onClick={()=>handleBlock(item)} className="boxbtn">Block</button>
+
+            <button
+                  onClick={() => handleUnfriend(item)}
+                  className="boxbtn"
+                >
+                  Unfriend
+                </button>
+          </div>
+        </div>
+      ))
+      :
+      <Alert className="alert" variant="filled" severity="info">
+            No Friend
+          </Alert>
+      }
+
+        
       </div>
     </div>
   );

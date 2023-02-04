@@ -149,12 +149,12 @@
   display: flex;
   column-gap: 20px;
   align-items: center;
-  border-bottom: 1px solid #4D4D4D;
+  border-bottom: 1px solid #4d4d4d;
   padding-bottom: 13px;
   margin-top: 15px;
 }
 
-.box:last-child{
+.box:last-child {
   border: 0;
 }
 
@@ -168,31 +168,32 @@
   width: 100%;
 }
 
-.img-preview{
+.img-preview {
   width: 70px !important;
   height: 70px !important;
   overflow: hidden;
   border-radius: 50%;
 }
 
-.profile_pic{
+.profile_pic {
   width: 70px;
   height: 70px;
   border-radius: 50%;
 }
 
-.plus_icon{
-  margin:0 20px;
+.plus_icon {
+  margin: 0 20px;
   font-size: 25px;
-  color: #5F35F5;
+  color: #5f35f5;
 }
 
-.alert{
+.alert {
   margin-top: 30px;
 }
 
-.flex_button{
+.flex_button {
   display: flex;
 }
+
 
 /* Home page design end */
