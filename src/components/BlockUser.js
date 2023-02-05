@@ -2,7 +2,7 @@ import Images from "./Images";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import React, { useEffect, useState } from "react";
 import Alert from "@mui/material/Alert";
-
+import { toast } from "react-toastify";
 import {
   getDatabase,
   ref,
@@ -12,11 +12,13 @@ import {
   push,
 } from "firebase/database";
 import { useSelector } from "react-redux";
+import { Oval } from "react-loader-spinner";
 
 const BlockUser = () => {
   const db = getDatabase();
 
   let [blocklist, setBlocklist] = useState([]);
+  let [loader, setLoader] = useState(false);
 
   let data = useSelector((state) => state);
   // console.log(data.userdata.userInfo.uid);
@@ -50,8 +52,8 @@ const BlockUser = () => {
     });
   }, []);
 
-
-  let handleUnblock = (item)=>{
+  let handleUnblock = (item) => {
+    setLoader(true);
     set(push(ref(db, "friends")), {
       sendername: item.block,
       senderid: item.blockid,
@@ -60,12 +62,13 @@ const BlockUser = () => {
       date: `${new Date().getDate()}/${
         new Date().getMonth() + 1
       }/${new Date().getFullYear()}`,
-     }).then(()=>{
+    }).then(() => {
       remove(ref(db, "block/" + item.id)).then(() => {
+        setLoader(false);
+        toast("Unblock User");
       });
-    })
-  }
-
+    });
+  };
 
   return (
     <div className="groupholder">
@@ -74,32 +77,49 @@ const BlockUser = () => {
         <BsThreeDotsVertical />
       </div>
       <div className="boxHolder">
-        
-        {blocklist.length > 0 
-        ?
-        blocklist.map((item) => (
-          <div className="box">
-            <div className="">
-              <Images imgsrc="assets/profile.png" />
-            </div>
+        {blocklist.length > 0 ? (
+          blocklist.map((item) => (
+            <div className="box">
+              <div className="">
+                <Images imgsrc="assets/profile.png" />
+              </div>
 
-            <div className="title">
-              <h3>{item.block}</h3>
-              <h3>{item.blockby}</h3>
-              <p>{item.date}</p>
+              <div className="title">
+                <h3>{item.block}</h3>
+                <h3>{item.blockby}</h3>
+                <p>{item.date}</p>
+              </div>
+
+              {loader ? (
+                <Oval
+                  height={30}
+                  width={30}
+                  color="#4fa94d"
+                  wrapperStyle={{}}
+                  wrapperClass=""
+                  visible={true}
+                  ariaLabel="oval-loading"
+                  secondaryColor="#4fa94d"
+                  strokeWidth={2}
+                  strokeWidthSecondary={2}
+                />
+              ) : (
+                <div>
+                  <button
+                    onClick={() => handleUnblock(item)}
+                    className="boxbtn"
+                  >
+                    Unblock
+                  </button>
+                </div>
+              )}
             </div>
-            <div>
-              <button onClick={()=>handleUnblock(item)} className="boxbtn">Unblock</button>
-            </div>
-          </div>
-        ))
-        :
-        <Alert className="alert" variant="filled" severity="info">
+          ))
+        ) : (
+          <Alert className="alert" variant="filled" severity="info">
             No Friend Request
           </Alert>
-        
-        }
-        
+        )}
       </div>
     </div>
   );
